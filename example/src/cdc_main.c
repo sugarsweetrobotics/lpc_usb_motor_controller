@@ -72,7 +72,7 @@ static int32_t g_Kp = 50;
 static int32_t g_Ti = 20;
 static int32_t g_sumEpsilon = 0;
 static int32_t g_epsilon_old = 0;
-static int32_t g_Td = 10;
+static int32_t g_Td = 1;
 static uint16_t g_dataADC;
 #define CONTROL_INTERVAL   (10) // [ms]
 
@@ -87,7 +87,7 @@ static inline void onControl() {
 	int32_t epsilon = g_target - g_dataADC;
 	g_sumEpsilon += epsilon;
 	int32_t deltaEpsilon = (epsilon - g_epsilon_old) / 10;
-	int32_t out = g_Kp * (epsilon + g_sumEpsilon / 100 / g_Ti + deltaEpsilon / g_Td);
+	int32_t out = g_Kp * (epsilon + g_sumEpsilon / 100 / g_Ti + deltaEpsilon * g_Td);
 	uint16_t ch0, ch1;
 	if (out < 0) {
 		ch0 = -out;
