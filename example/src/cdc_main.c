@@ -68,11 +68,11 @@ static int handle0, handle1;
 
 /* For Control */
 static int32_t g_target = 4096 / 2;
-static int32_t g_Kp = 50;
-static int32_t g_Ti = 20;
+static int32_t g_Kp = 10;
+static int32_t g_Ti = 9999;
 static int32_t g_sumEpsilon = 0;
 static int32_t g_epsilon_old = 0;
-static int32_t g_Td = 1;
+static int32_t g_Td = 0;
 static uint16_t g_dataADC;
 #define CONTROL_INTERVAL   (10) // [ms]
 
@@ -85,10 +85,11 @@ static uint16_t g_dataADC;
  */
 static inline void onControl() {
 	int32_t epsilon = g_target - g_dataADC;
-	g_sumEpsilon += epsilon;
-	int32_t deltaEpsilon = (epsilon - g_epsilon_old) / 10;
-	int32_t out = g_Kp * (epsilon + g_sumEpsilon / 100 / g_Ti + deltaEpsilon * g_Td);
-	uint16_t ch0, ch1;
+	g_sumEpsilon += (epsilon + g_epsilon_old)/ 2 * 10 / 1000;
+	int32_t deltaEpsilon = (epsilon - g_epsilon_old) / 10 * 1000;
+	if (g_Ti == 9999) g_sumEpsilon = 0;
+	int32_t out = g_Kp * (epsilon + g_sumEpsilon / g_Ti + deltaEpsilon * g_Td);
+	uint32_t ch0, ch1;
 	if (out < 0) {
 		ch0 = -out;
 		ch1 = 0;
